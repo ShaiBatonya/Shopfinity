@@ -5,138 +5,146 @@ import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 const Contact = () => {
   const location = useLocation();
   const [prevLocation, setPrevLocation] = useState("");
-  useEffect(() => {
-    setPrevLocation(location.state.data);
-  }, [location]);
-
-  const [clientName, setclientName] = useState("");
-  const [email, setEmail] = useState("");
-  const [messages, setMessages] = useState("");
-
-  // ========== Error Messages Start here ============
-  const [errClientName, setErrClientName] = useState("");
-  const [errEmail, setErrEmail] = useState("");
-  const [errMessages, setErrMessages] = useState("");
-  // ========== Error Messages End here ==============
+  const [formData, setFormData] = useState({
+    clientName: "",
+    email: "",
+    message: "",
+  });
+  const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
 
-  const handleName = (e) => {
-    setclientName(e.target.value);
-    setErrClientName("");
-  };
-  const handleEmail = (e) => {
-    setEmail(e.target.value);
-    setErrEmail("");
-  };
-  const handleMessages = (e) => {
-    setMessages(e.target.value);
-    setErrMessages("");
+  useEffect(() => {
+    setPrevLocation(location.state?.data || "Home");
+  }, [location]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  // ================= Email Validation start here =============
-  const EmailValidation = (email) => {
-    return String(email)
-      .toLowerCase()
-      .match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i);
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.clientName.trim()) {
+      errors.clientName = "Name is required.";
+    }
+    if (!formData.email.trim()) {
+      errors.email = "Email is required.";
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(formData.email)) {
+      errors.email = "Please enter a valid email address.";
+    }
+    if (!formData.message.trim()) {
+      errors.message = "Message is required.";
+    }
+    return errors;
   };
-  // ================= Email Validation End here ===============
 
-  const handlePost = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!clientName) {
-      setErrClientName("Enter your Name");
-    }
-    if (!email) {
-      setErrEmail("Enter your Email");
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
     } else {
-      if (!EmailValidation(email)) {
-        setErrEmail("Enter a Valid Email");
-      }
-    }
-    if (!messages) {
-      setErrMessages("Enter your Messages");
-    }
-    if (clientName && email && EmailValidation(email) && messages) {
       setSuccessMsg(
-        `Thank you dear ${clientName}, Your messages has been received successfully. Futher details will sent to you by your email at ${email}.`
+        `Thank you, ${formData.clientName}. Your message has been received. We will get back to you at ${formData.email} soon.`
       );
+      setFormData({ clientName: "", email: "", message: "" });
+      setErrors({});
     }
   };
 
   return (
-    <div className="max-w-container mx-auto px-4">
-      <Breadcrumbs title="Contact" prevLocation={prevLocation} />
+    <div className="max-w-container mx-auto px-4 py-6">
+      <Breadcrumbs title="Contact Us" prevLocation={prevLocation} />
       {successMsg ? (
-        <p className="pb-20 w-96 font-medium text-green-500">{successMsg}</p>
+        <div className="bg-green-100 text-green-700 p-4 rounded-md shadow-md">
+          <p className="font-semibold">{successMsg}</p>
+        </div>
       ) : (
-        <form className="pb-20">
-          <h1 className="font-titleFont font-semibold text-3xl">
-            Fill up a Form
+        <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto">
+          <h1 className="font-titleFont text-3xl font-bold text-gray-800">
+            Get in Touch
           </h1>
-          <div className="w-[500px] h-auto py-6 flex flex-col gap-6">
+          <div className="space-y-4">
             <div>
-              <p className="text-base font-titleFont font-semibold px-2">
+              <label
+                htmlFor="clientName"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Name
-              </p>
+              </label>
               <input
-                onChange={handleName}
-                value={clientName}
-                className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
+                id="clientName"
+                name="clientName"
                 type="text"
-                placeholder="Enter your name here"
+                value={formData.clientName}
+                onChange={handleInputChange}
+                placeholder="Enter your name"
+                className={`w-full px-4 py-2 border rounded-md focus:ring-2 ${
+                  errors.clientName
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-primeColor"
+                }`}
               />
-              {errClientName && (
-                <p className="text-red-500 text-sm font-titleFont font-semibold mt-1 px-2 flex items-center gap-1">
-                  <span className="text-sm italic font-bold">!</span>
-                  {errClientName}
-                </p>
+              {errors.clientName && (
+                <p className="text-red-500 text-sm mt-1">{errors.clientName}</p>
               )}
             </div>
             <div>
-              <p className="text-base font-titleFont font-semibold px-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email
-              </p>
+              </label>
               <input
-                onChange={handleEmail}
-                value={email}
-                className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
+                id="email"
+                name="email"
                 type="email"
-                placeholder="Enter your name here"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Enter your email"
+                className={`w-full px-4 py-2 border rounded-md focus:ring-2 ${
+                  errors.email
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-primeColor"
+                }`}
               />
-              {errEmail && (
-                <p className="text-red-500 text-sm font-titleFont font-semibold mt-1 px-2 flex items-center gap-1">
-                  <span className="text-sm italic font-bold">!</span>
-                  {errEmail}
-                </p>
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
               )}
             </div>
             <div>
-              <p className="text-base font-titleFont font-semibold px-2">
-                Messages
-              </p>
+              <label
+                htmlFor="message"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Message
+              </label>
               <textarea
-                onChange={handleMessages}
-                value={messages}
-                cols="30"
-                rows="3"
-                className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor resize-none"
-                type="text"
-                placeholder="Enter your name here"
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleInputChange}
+                placeholder="Enter your message"
+                rows="4"
+                className={`w-full px-4 py-2 border rounded-md focus:ring-2 resize-none ${
+                  errors.message
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-primeColor"
+                }`}
               ></textarea>
-              {errMessages && (
-                <p className="text-red-500 text-sm font-titleFont font-semibold mt-1 px-2 flex items-center gap-1">
-                  <span className="text-sm italic font-bold">!</span>
-                  {errMessages}
-                </p>
+              {errors.message && (
+                <p className="text-red-500 text-sm mt-1">{errors.message}</p>
               )}
             </div>
-            <button
-              onClick={handlePost}
-              className="w-44 bg-primeColor text-gray-200 h-10 font-titleFont text-base tracking-wide font-semibold hover:bg-black hover:text-white duration-200"
-            >
-              Post
-            </button>
           </div>
+          <button
+            type="submit"
+            className="w-full bg-primeColor text-white py-2 rounded-md shadow-md hover:bg-black transition-all"
+          >
+            Submit
+          </button>
         </form>
       )}
     </div>

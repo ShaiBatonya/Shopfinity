@@ -6,24 +6,29 @@ import ShopSideNav from "../../components/pageProps/shopPage/ShopSideNav";
 
 const Shop = () => {
   const [itemsPerPage, setItemsPerPage] = useState(12);
-  const itemsPerPageFromBanner = (itemsPerPage) => {
-    setItemsPerPage(itemsPerPage);
+
+  const handleItemsPerPage = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
   };
 
   return (
-    <div className="max-w-container mx-auto px-4">
+    <div className="max-w-container mx-auto px-4 py-6">
+      {/* Breadcrumbs */}
       <Breadcrumbs title="Products" />
-      {/* ================= Products Start here =================== */}
-      <div className="w-full h-full flex pb-20 gap-10">
-        <div className="w-[20%] lgl:w-[25%] hidden mdl:inline-flex h-full">
+
+      {/* Products Section */}
+      <div className="flex flex-col mdl:flex-row gap-10 pb-20">
+        {/* Sidebar Navigation */}
+        <div className="w-full mdl:w-[25%] hidden mdl:block">
           <ShopSideNav />
         </div>
-        <div className="w-full mdl:w-[80%] lgl:w-[75%] h-full flex flex-col gap-10">
-          <ProductBanner itemsPerPageFromBanner={itemsPerPageFromBanner} />
+
+        {/* Products and Pagination */}
+        <div className="w-full mdl:w-[75%] flex flex-col gap-8">
+          <ProductBanner itemsPerPageFromBanner={handleItemsPerPage} />
           <Pagination itemsPerPage={itemsPerPage} />
         </div>
       </div>
-      {/* ================= Products End here ===================== */}
     </div>
   );
 };

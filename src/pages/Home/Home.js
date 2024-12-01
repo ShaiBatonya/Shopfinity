@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Banner from "../../components/Banner/Banner";
 import BannerBottom from "../../components/Banner/BannerBottom";
 import BestSellers from "../../components/home/BestSellers/BestSellers";
@@ -9,22 +9,32 @@ import YearProduct from "../../components/home/YearProduct/YearProduct";
 
 const Home = () => {
   return (
-    <div className="w-full mx-auto bg-gray-50">
+    <main className="w-full mx-auto bg-gray-50">
       {/* Banner Section */}
-      <div className="relative">
+      <section className="relative bg-white">
         <Banner />
         <BannerBottom />
-      </div>
+      </section>
 
-      {/* Content Section */}
+      {/* Lazy Loading Sections */}
       <div className="max-w-container mx-auto px-4 space-y-12">
-        <Sale />
-        <NewArrivals />
-        <BestSellers />
-        <YearProduct />
-        <SpecialOffers />
+        <Suspense fallback={<div className="text-center py-8">Loading Sale Section...</div>}>
+          <Sale />
+        </Suspense>
+        <Suspense fallback={<div className="text-center py-8">Loading New Arrivals...</div>}>
+          <NewArrivals />
+        </Suspense>
+        <Suspense fallback={<div className="text-center py-8">Loading Best Sellers...</div>}>
+          <BestSellers />
+        </Suspense>
+        <Suspense fallback={<div className="text-center py-8">Loading Year Product...</div>}>
+          <YearProduct />
+        </Suspense>
+        <Suspense fallback={<div className="text-center py-8">Loading Special Offers...</div>}>
+          <SpecialOffers />
+        </Suspense>
       </div>
-    </div>
+    </main>
   );
 };
 

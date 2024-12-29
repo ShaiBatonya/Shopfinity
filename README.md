@@ -4,7 +4,7 @@ Shopfinity is a modern, sleek, and fully responsive e-commerce platform crafted 
 
 ---
 
-## 🚀 **Features**
+##  **Features**
 
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices, ensuring a seamless experience across all platforms.
 - **Advanced Search**: Real-time product filtering for quick and accurate results.
